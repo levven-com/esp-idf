@@ -75,6 +75,7 @@ esp_err_t IRAM_ATTR esp_backtrace_print_from_frame(int depth, const esp_backtrac
 
     print_str("\r\n\r\nBacktrace:", panic);
     print_entry(esp_cpu_process_stack_pc(stk_frame.pc), stk_frame.sp, panic);
+    print_str(" ", panic);
 
     //Check if first frame is valid
     bool corrupted = !(esp_stack_ptr_is_sane(stk_frame.sp) &&
