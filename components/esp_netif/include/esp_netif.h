@@ -910,6 +910,9 @@ void esp_netif_netstack_buf_free(void *netstack_buf);
  * @}
  */
 
+struct netif;
+struct netif *esp_netif_get_lwip_netif(esp_netif_t *esp_netif);
+
 #ifdef __cplusplus
 }
 #endif
