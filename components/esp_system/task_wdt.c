@@ -159,7 +159,11 @@ static void task_wdt_isr(void *arg)
             if (xTaskGetAffinity(twdttask->task_handle)==tskNO_AFFINITY) {
                 cpu=DRAM_STR("CPU 0/1");
             }
-            ESP_EARLY_LOGE(TAG, " - %s (%s)", pcTaskGetTaskName(twdttask->task_handle), cpu);
+            ets_printf(" - %s (%s), backtrace:", pcTaskGetTaskName(twdttask->task_handle), cpu);
+            /* First element of the TCB is the stack pointer */
+            XtExcFrame *frame = *((XtExcFrame **) (twdttask->task_handle));
+            esp_backtrace_frame_t f = {.pc = frame->pc, .sp = frame->a1, .next_pc = frame->a0};
+            esp_backtrace_print_from_frame(100, &f, true /* panic */);
         }
     }
     ESP_EARLY_LOGE(TAG, "%s", DRAM_STR("Tasks currently running:"));
