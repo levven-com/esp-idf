@@ -39,7 +39,9 @@
 // Headers for other components init functions
 #include "nvs_flash.h"
 #include "esp_phy_init.h"
+#if CONFIG_ESP32_WIFI_ENABLED
 #include "esp_coexist_internal.h"
+#endif
 
 #if CONFIG_ESP_COREDUMP_ENABLE
 #include "esp_core_dump.h"
