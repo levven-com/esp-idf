@@ -41,12 +41,17 @@ static IRAM_ATTR void esp32_cd_dump_regs(void) {
 }
 
 static IRAM_ATTR void esp32_cd_dump_dram(void) {
-  mgos_cd_write_section("DRAM", (void *) 0x3FFAE000, 0x52000);
+#if CONFIG_IDF_TARGET_ESP32
+  mgos_cd_write_section("DRAM", (void *) 0x3ffae000, 0x52000);
+#elif CONFIG_IDF_TARGET_ESP32C3
+  mgos_cd_write_section("DRAM", (void *) 0x3fc80000, 0x50000);
+#else
+#error DRAM region not defined
+#endif
 }
 
 IRAM_ATTR void esp_core_dump_to_uart(panic_info_t *info) {
-  const XtExcFrame *frame = info->frame;
-  esp_gdbstub_frame_to_regfile(frame, &s_gdb_reg_file);
+  esp_gdbstub_frame_to_regfile(info->frame, &s_gdb_reg_file);
   esp_cpu_clear_watchpoint(0);
   esp_cpu_clear_watchpoint(1);
   mgos_cd_register_section_writer(esp32_cd_dump_regs);

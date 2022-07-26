@@ -25,6 +25,7 @@
 #include "driver/timer.h"
 #include "driver/periph_ctrl.h"
 #include "esp_task_wdt.h"
+#include "esp_private/panic_internal.h"
 #include "esp_private/system_internal.h"
 #include "esp_private/crosscore_int.h"
 #include "hal/timer_types.h"
@@ -155,15 +156,15 @@ static void task_wdt_isr(void *arg)
     ESP_EARLY_LOGE(TAG, "Task watchdog got triggered. The following tasks did not reset the watchdog in time:");
     for (twdttask=twdt_config->list; twdttask!=NULL; twdttask=twdttask->next) {
         if (!twdttask->has_reset) {
+            BaseType_t core=xTaskGetAffinity(twdttask->task_handle)==1?1:0;
             cpu=xTaskGetAffinity(twdttask->task_handle)==0?DRAM_STR("CPU 0"):DRAM_STR("CPU 1");
             if (xTaskGetAffinity(twdttask->task_handle)==tskNO_AFFINITY) {
                 cpu=DRAM_STR("CPU 0/1");
             }
             ets_printf(" - %s (%s), backtrace:", pcTaskGetTaskName(twdttask->task_handle), cpu);
             /* First element of the TCB is the stack pointer */
-            XtExcFrame *frame = *((XtExcFrame **) (twdttask->task_handle));
-            esp_backtrace_frame_t f = {.pc = frame->pc, .sp = frame->a1, .next_pc = frame->a0};
-            esp_backtrace_print_from_frame(100, &f, true /* panic */);
+            const void *frame = *((void **) (twdttask->task_handle));
+            panic_print_backtrace(frame, core);
         }
     }
     ESP_EARLY_LOGE(TAG, "%s", DRAM_STR("Tasks currently running:"));
