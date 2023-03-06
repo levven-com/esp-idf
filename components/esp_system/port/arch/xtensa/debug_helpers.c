@@ -47,11 +47,7 @@ static void IRAM_ATTR print_entry(uint32_t pc, uint32_t sp, bool panic)
         panic_print_str(" 0x");
         panic_print_hex(pc);
     } else {
-<<<<<<< HEAD
-        esp_rom_printf(" 0x%08X:0x%08X", pc, sp);
-=======
         esp_rom_printf("0x%08X", pc);
->>>>>>> bc9597c5bb (Do not print SP in backtraces)
     }
 }
 
