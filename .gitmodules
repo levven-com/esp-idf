@@ -35,10 +35,6 @@
 	path = components/json/cJSON
 	url = ../../DaveGamble/cJSON.git
 
-[submodule "components/mbedtls/mbedtls"]
-	path = components/mbedtls/mbedtls
-	url = ../../espressif/mbedtls.git
-
 [submodule "components/asio/asio"]
 	path = components/asio/asio
 	url = ../../espressif/asio.git
